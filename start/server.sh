@@ -13,7 +13,7 @@ docker run \
     -e ARANGO_STORAGE_ENGINE=$ARANGO_STORAGE_ENGINE
     c1.triagens-gmbh.zz:5000/arangodb/enterprise-maintainer:feature-branch-docker-images
 
-trap "docker rm -fv $DOCKER_NAME" EXIT
+trap "docker rm -fv $ARANGO_DOCKER_NAME" EXIT
 
 echo "Waiting until ArangoDB is ready on port $ARANGO_PORT"
 
