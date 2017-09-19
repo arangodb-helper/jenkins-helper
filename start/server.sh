@@ -27,7 +27,7 @@ if [ "$ARANGO_MODE" == "cluster" ]; then
         -v $JWTFILE:/jwtsecret:ro \
         -p $ARANGO_PORT:8529 \
         -e ARANGO_ROOT_PASSWORD=$ARANGO_ROOT_PASSWORD \
-        c1.triagens-gmbh.zz:5000/arangodb/${ARANGODB_EDITION}-maintainer:feature-branch-docker-images \
+        c1.triagens-gmbh.zz:5000/arangodb/${ARANGO_EDITION}-maintainer:feature-branch-docker-images \
         arangodb --starter.local --server.storage-engine $ARANGO_STORAGE_ENGINE --starter.data-dir testrun
 
     rm -f $JWTFILE
@@ -38,7 +38,7 @@ elif [ "$ARANGO_MODE" == "singleserver" ]; then
         -p $ARANGO_PORT:8529 \
         -e ARANGO_ROOT_PASSWORD=$ARANGO_ROOT_PASSWORD \
         -e ARANGO_STORAGE_ENGINE=$ARANGO_STORAGE_ENGINE \
-        c1.triagens-gmbh.zz:5000/arangodb/${ARANGODB_EDITION}-maintainer:feature-branch-docker-images
+        c1.triagens-gmbh.zz:5000/arangodb/${ARANGO_EDITION}-maintainer:feature-branch-docker-images
 else
     echo "unknown mode $ARANGO_MODE"
     exit 1
