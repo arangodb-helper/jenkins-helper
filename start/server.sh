@@ -24,7 +24,7 @@ if [ "$ARANGO_MODE" == "cluster" ]; then
     docker run \
         --name=$ARANGO_DOCKER_NAME \
         -d \
-        -v $JWTFILE:jwtsecret:ro \
+        -v $JWTFILE:/jwtsecret:ro \
         -p $ARANGO_PORT:8529 \
         -e ARANGO_ROOT_PASSWORD=$ARANGO_ROOT_PASSWORD \
         c1.triagens-gmbh.zz:5000/arangodb/${ARANGODB_EDITION}-maintainer:feature-branch-docker-images \
