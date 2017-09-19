@@ -16,7 +16,7 @@ docker kill $ARANGO_DOCKER_NAME > /dev/null 2>&1 || true
 docker rm -fv $ARANGO_DOCKER_NAME > /dev/null 2>&1 || true
 
 if [ "$ARANGO_MODE" == "cluster" ]; then
-    JWTFILE="`pwd`/jwtsecret.$$"
+    JWTFILE="jwtsecret.$$"
     rm -f $JWTFILE
 
     echo "geheim" > $JWTFILE
