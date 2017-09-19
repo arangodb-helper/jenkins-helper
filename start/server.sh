@@ -1,3 +1,10 @@
+for name in ARANGO_DOCKER_NAME ARANGO_PORT ARANGO_MODE ARANGO_STORAGE_ENGINE; do
+    if [ -z "$((name))" ]; then
+        echo "$name missing"
+        exit 1
+    fi
+done
+
 docker rm -fv $ARANGO_DOCKER_NAME 2>&1 > /dev/null || true
 
 echo "PORT: $ARANGO_PORT"
