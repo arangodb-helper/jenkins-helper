@@ -1,10 +1,16 @@
-docker rm -fv $ARANGO_DOCKER_NAME || true
+docker rm -fv $ARANGO_DOCKER_NAME 2>&1 > /dev/null || true
+
+echo "PORT: $ARANGO_PORT"
+echo "MODE: $ARANGO_MODE"
+echo "ENGINE: $ARANGO_STORAGE_ENGINE"
+echo
 
 docker run \
     --name=$ARANGO_DOCKER_NAME \
     -d \
     -p $ARANGO_PORT:8529 \
     -e ARANGO_ROOT_PASSWORD=$ARANGO_ROOT_PASSWORD \
+    -e ARANGO_STORAGE_ENGINE=$ARANGO_STORAGE_ENGINE
     c1.triagens-gmbh.zz:5000/arangodb/enterprise-maintainer:feature-branch-docker-images
 
 trap "docker rm -fv $DOCKER_NAME" EXIT
