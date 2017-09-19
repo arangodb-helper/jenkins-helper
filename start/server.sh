@@ -1,5 +1,5 @@
-for name in ARANGO_DOCKER_NAME ARANGO_PORT ARANGO_MODE ARANGO_STORAGE_ENGINE ARANGODB_EDITION; do
-    if [ -z "$((name))" ]; then
+for name in ARANGO_DOCKER_NAME ARANGO_PORT ARANGO_MODE ARANGO_STORAGE_ENGINE ARANGO_EDITION; do
+    if [ -z "${!name}" ]; then
         echo "$name missing"
         exit 1
     fi
@@ -9,7 +9,7 @@ echo "NAME: $ARANGO_DOCKER_NAME"
 echo "PORT: $ARANGO_PORT"
 echo "MODE: $ARANGO_MODE"
 echo "ENGINE: $ARANGO_STORAGE_ENGINE"
-echo "EDITION: $ARANGO_STORAGE_EDITION"
+echo "EDITION: $ARANGO_EDITION"
 echo
 
 docker kill $ARANGO_DOCKER_NAME > /dev/null 2>&1 || true
