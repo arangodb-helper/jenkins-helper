@@ -22,7 +22,7 @@ docker rm -fv $ARANGO_DOCKER_NAME > /dev/null 2>&1 || true
 docker pull c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:devel
 
 if [ "$ARANGO_MODE" == "cluster" ]; then
-    if [ "ARANGO_AUTH" == "auth" ]; then
+    if [ "$ARANGO_AUTH" == "auth" ]; then
         JWTFILE="jwtsecret.$$"
         rm -f $JWTFILE
 
@@ -47,7 +47,7 @@ if [ "$ARANGO_MODE" == "cluster" ]; then
             arangodb --starter.local --server.storage-engine $ARANGO_STORAGE_ENGINE --starter.data-dir testrun
     fi
 elif [ "$ARANGO_MODE" == "singleserver" ]; then
-    if [ "ARANGO_AUTH" == "auth" ]; then
+    if [ "$ARANGO_AUTH" == "auth" ]; then
         docker run \
             --name=$ARANGO_DOCKER_NAME \
             -d \
@@ -73,7 +73,7 @@ trap "docker rm -fv $ARANGO_DOCKER_NAME" EXIT
 
 echo "Waiting until ArangoDB is ready on port $ARANGO_PORT"
 
-if [ "ARANGO_AUTH" == "auth" ]; then
+if [ "$ARANGO_AUTH" == "auth" ]; then
     CURL_USER="-uroot:$ARANGO_ROOT_PASSWORD"
 else
     CURL_USER=""
