@@ -60,7 +60,7 @@ elif [ "$ARANGO_MODE" == "singleserver" ]; then
             --name=$ARANGO_DOCKER_NAME \
             -d \
             -p $ARANGO_PORT:8529 \
-            -e ARANGO_NO_PASSWORD=1 \
+            -e ARANGO_NO_AUTH=1 \
             -e ARANGO_STORAGE_ENGINE=$ARANGO_STORAGE_ENGINE \
             c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:devel
     fi
