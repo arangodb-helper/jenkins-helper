@@ -73,8 +73,14 @@ trap "docker rm -fv $ARANGO_DOCKER_NAME" EXIT
 
 echo "Waiting until ArangoDB is ready on port $ARANGO_PORT"
 
+if [ "ARANGO_AUTH" == "auth" ]; then
+    CURL_USER="-uroot:$ARANGO_ROOT_PASSWORD"
+else
+    CURL_USER=""
+fi
+
 count=0
-while [ "$count" -lt 120 -a -z "`curl -uroot:$ARANGO_ROOT_PASSWORD -s http://127.0.0.1:$ARANGO_PORT/_api/version || true`" ]; do
+while [ "$count" -lt 120 -a -z "`curl $CURL_USER -s http://127.0.0.1:$ARANGO_PORT/_api/version || true`" ]; do
   count=`expr $count + 1`
   echo "waiting ($count)..."
   sleep 2s
