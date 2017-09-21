@@ -14,6 +14,7 @@ echo
 
 docker kill $ARANGO_DOCKER_NAME > /dev/null 2>&1 || true
 docker rm -fv $ARANGO_DOCKER_NAME > /dev/null 2>&1 || true
+docker pull c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:devel
 
 if [ "$ARANGO_MODE" == "cluster" ]; then
     JWTFILE="jwtsecret.$$"
