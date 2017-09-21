@@ -28,41 +28,53 @@ if [ "$ARANGO_MODE" == "cluster" ]; then
 
         echo "geheim" > $JWTFILE
 
-        docker run \
+        command="docker run \
             --name=$ARANGO_DOCKER_NAME \
             -d \
             -v $JWTFILE:/jwtsecret:ro \
             -p $ARANGO_PORT:8529 \
             -e ARANGO_ROOT_PASSWORD=$ARANGO_ROOT_PASSWORD \
             c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:devel \
-            arangodb --starter.local --server.storage-engine $ARANGO_STORAGE_ENGINE --starter.data-dir testrun
+            arangodb --starter.local --server.storage-engine $ARANGO_STORAGE_ENGINE --starter.data-dir testrun"
+
+        echo $command
+        $command
 
         rm -f $JWTFILE
     else
-        docker run \
+        command="docker run \
             --name=$ARANGO_DOCKER_NAME \
             -d \
             -p $ARANGO_PORT:8529 \
             c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:devel \
-            arangodb --starter.local --server.storage-engine $ARANGO_STORAGE_ENGINE --starter.data-dir testrun
+            arangodb --starter.local --server.storage-engine $ARANGO_STORAGE_ENGINE --starter.data-dir testrun"
+
+        echo $command
+        $command
     fi
 elif [ "$ARANGO_MODE" == "singleserver" ]; then
     if [ "$ARANGO_AUTH" == "auth" ]; then
-        docker run \
+        command="docker run \
             --name=$ARANGO_DOCKER_NAME \
             -d \
             -p $ARANGO_PORT:8529 \
             -e ARANGO_ROOT_PASSWORD=$ARANGO_ROOT_PASSWORD \
             -e ARANGO_STORAGE_ENGINE=$ARANGO_STORAGE_ENGINE \
-            c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:devel
+            c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:devel"
+
+        echo $command
+        $command
     else
-        docker run \
+        command="docker run \
             --name=$ARANGO_DOCKER_NAME \
             -d \
             -p $ARANGO_PORT:8529 \
             -e ARANGO_NO_AUTH=1 \
             -e ARANGO_STORAGE_ENGINE=$ARANGO_STORAGE_ENGINE \
-            c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:devel
+            c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:devel"
+
+        echo $command
+        $command
     fi
 else
     echo "unknown mode $ARANGO_MODE"
