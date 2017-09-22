@@ -24,19 +24,20 @@ docker run c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:
 
 if [ "$ARANGO_MODE" == "cluster" ]; then
     if [ "$ARANGO_AUTH" == "auth" ]; then
-        JWTFILE="jwtsecret.$$"
-        rm -f $JWTFILE
+        JWTDIR="jwtsecret.$$"
+        rm -rf $JWTDIR
+        mkdir $JWTDIR
 
-        echo "geheim" > $JWTFILE
+        echo "geheim" > $JWTDIR/geheim
 
         command="docker run \
             --name=$ARANGO_DOCKER_NAME \
             -d \
-            -v $JWTFILE:/jwtsecret:ro \
+            -v $JWTDIR:/jwtsecret:ro \
             -p $ARANGO_PORT:8529 \
             -e ARANGO_ROOT_PASSWORD=$ARANGO_ROOT_PASSWORD \
             c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:devel \
-            arangodb --starter.local --server.storage-engine $ARANGO_STORAGE_ENGINE --starter.data-dir testrun"
+            arangodb --starter.local --server.storage-engine $ARANGO_STORAGE_ENGINE --auth.jwt-secret /jwtsecret/geheim --starter.data-dir testrun"
 
         echo $command
         $command
