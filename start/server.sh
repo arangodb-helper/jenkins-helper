@@ -35,7 +35,7 @@ if [ "$ARANGO_MODE" == "cluster" ]; then
             -d \
             -v $JWTDIR:/jwtsecret \
             -p $ARANGO_PORT:8529 \
-            -e ARANGO_ROOT_PASSWORD=$ARANGO_ROOT_PASSWORD \
+            -e ARANGODB_DEFAULT_ROOT_PASSWORD=$ARANGO_ROOT_PASSWORD \
             c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:devel \
             arangodb --starter.local --server.storage-engine $ARANGO_STORAGE_ENGINE --auth.jwt-secret /jwtsecret/geheim --starter.data-dir testrun"
 
