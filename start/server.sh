@@ -101,6 +101,13 @@ while [ "$count" -lt 120 -a -z "`curl $CURL_USER -s http://127.0.0.1:$ARANGO_POR
 done
 
 if [ $count -ge 120 ]; then
+    echo "docker logs:"
+    docker logs $ARANGO_DOCKER_NAME
+
+    echo
+    echo "curl:"
+    curl $CURL_USER -v http://127.0.0.1:$ARANGO_PORT/_api/version
+
     echo "ArangoDB did not start"
     exit 1
 fi
