@@ -24,7 +24,7 @@ docker run c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:
 
 if [ "$ARANGO_MODE" == "cluster" ]; then
     if [ "$ARANGO_AUTH" == "auth" ]; then
-        JWTDIR="jwtsecret.$$"
+        JWTDIR="`pwd`/jwtsecret.$$"
         rm -rf $JWTDIR
         mkdir $JWTDIR
 
@@ -33,7 +33,7 @@ if [ "$ARANGO_MODE" == "cluster" ]; then
         command="docker run \
             --name=$ARANGO_DOCKER_NAME \
             -d \
-            -v $JWTDIR:/jwtsecret:ro \
+            -v $JWTDIR:/jwtsecret \
             -p $ARANGO_PORT:8529 \
             -e ARANGO_ROOT_PASSWORD=$ARANGO_ROOT_PASSWORD \
             c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:devel \
