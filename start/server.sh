@@ -1,6 +1,5 @@
-if [ -z "$ARANGO_AUTH" ]; then
-    ARANGO_AUTH="auth"
-fi
+if [ -z "$ARANGO_AUTH" ]; then ARANGO_AUTH="auth"; fi
+if [ -z "$ARANGO_BRANCH" ]; then ARANGO_BRANCH="devel"; fi
 
 for name in ARANGO_DOCKER_NAME ARANGO_PORT ARANGO_MODE ARANGO_STORAGE_ENGINE ARANGO_EDITION ARANGO_AUTH; do
     if [ -z "${!name}" ]; then
@@ -19,8 +18,8 @@ echo
 
 docker kill $ARANGO_DOCKER_NAME > /dev/null 2>&1 || true
 docker rm -fv $ARANGO_DOCKER_NAME > /dev/null 2>&1 || true
-docker pull c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:devel
-docker run c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:devel arangosh --version
+docker pull c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH
+docker run c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH arangosh --version
 
 if [ "$ARANGO_MODE" == "cluster" ]; then
     if [ "$ARANGO_AUTH" == "auth" ]; then
@@ -35,8 +34,9 @@ if [ "$ARANGO_MODE" == "cluster" ]; then
             -d \
             -v $JWTDIR:/jwtsecret \
             -p $ARANGO_PORT:8529 \
+            -e ARANGO_ROOT_PASSWORD=$ARANGO_ROOT_PASSWORD \
             -e ARANGODB_DEFAULT_ROOT_PASSWORD=$ARANGO_ROOT_PASSWORD \
-            c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:devel \
+            c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH \
             arangodb --starter.local --server.storage-engine $ARANGO_STORAGE_ENGINE --auth.jwt-secret /jwtsecret/geheim --starter.data-dir testrun"
 
         echo $command
@@ -48,7 +48,7 @@ if [ "$ARANGO_MODE" == "cluster" ]; then
             --name=$ARANGO_DOCKER_NAME \
             -d \
             -p $ARANGO_PORT:8529 \
-            c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:devel \
+            c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH \
             arangodb --starter.local --server.storage-engine $ARANGO_STORAGE_ENGINE --starter.data-dir testrun"
 
         echo $command
@@ -62,7 +62,7 @@ elif [ "$ARANGO_MODE" == "singleserver" ]; then
             -p $ARANGO_PORT:8529 \
             -e ARANGO_ROOT_PASSWORD=$ARANGO_ROOT_PASSWORD \
             -e ARANGO_STORAGE_ENGINE=$ARANGO_STORAGE_ENGINE \
-            c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:devel"
+            c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH"
 
         echo $command
         $command
@@ -73,7 +73,7 @@ elif [ "$ARANGO_MODE" == "singleserver" ]; then
             -p $ARANGO_PORT:8529 \
             -e ARANGO_NO_AUTH=1 \
             -e ARANGO_STORAGE_ENGINE=$ARANGO_STORAGE_ENGINE \
-            c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:devel"
+            c1.triagens-gmbh.zz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH"
 
         echo $command
         $command
