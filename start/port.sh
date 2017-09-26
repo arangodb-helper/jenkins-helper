@@ -17,8 +17,8 @@ if test "$1" == "--clean"; then
     exit
 fi
 
-port=10000
-INCR=2000
+port=9000
+INCR=1
 
 find $PORTDIR -type f -cmin +$TIMEOUT -exec rm "{}" ";"
 
