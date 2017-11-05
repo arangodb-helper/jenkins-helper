@@ -62,7 +62,7 @@ elif [ "$ARANGO_MODE" == "singleserver" ]; then
             -p $ARANGO_PORT:8529 \
             -e ARANGO_ROOT_PASSWORD=$ARANGO_ROOT_PASSWORD \
             -e ARANGO_STORAGE_ENGINE=$ARANGO_STORAGE_ENGINE \
-            registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH"
+            registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH --javascript.allow-admin-execute true"
 
         echo $command
         $command
@@ -73,7 +73,7 @@ elif [ "$ARANGO_MODE" == "singleserver" ]; then
             -p $ARANGO_PORT:8529 \
             -e ARANGO_NO_AUTH=1 \
             -e ARANGO_STORAGE_ENGINE=$ARANGO_STORAGE_ENGINE \
-            registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH"
+            registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH --javascript.allow-admin-execute true"
 
         echo $command
         $command
