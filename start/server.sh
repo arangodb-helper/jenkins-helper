@@ -21,6 +21,11 @@ docker rm -fv $ARANGO_DOCKER_NAME > /dev/null 2>&1 || true
 docker pull registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH
 docker run registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH arangosh --version
 
+OUTDIR="`pwd`/output"
+rm -rf $OUTDIR
+mkdir $OUTDIR
+
+
 if [ "$ARANGO_MODE" == "cluster" ]; then
     if [ "$ARANGO_AUTH" == "auth" ]; then
         JWTDIR="`pwd`/jwtsecret.$$"
@@ -36,8 +41,9 @@ if [ "$ARANGO_MODE" == "cluster" ]; then
             -p $ARANGO_PORT:8529 \
             -e ARANGO_ROOT_PASSWORD=$ARANGO_ROOT_PASSWORD \
             -e ARANGODB_DEFAULT_ROOT_PASSWORD=$ARANGO_ROOT_PASSWORD \
+            -v $OUTDIR:/testrun \
             registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH \
-            arangodb --starter.local --server.storage-engine $ARANGO_STORAGE_ENGINE --auth.jwt-secret /jwtsecret/geheim --starter.data-dir testrun"
+            arangodb --starter.local --server.storage-engine $ARANGO_STORAGE_ENGINE --auth.jwt-secret /jwtsecret/geheim --starter.data-dir /testrun"
 
         echo $command
         $command
@@ -48,21 +54,31 @@ if [ "$ARANGO_MODE" == "cluster" ]; then
             --name=$ARANGO_DOCKER_NAME \
             -d \
             -p $ARANGO_PORT:8529 \
+            -v $OUTDIR:/testrun \
             registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH \
-            arangodb --starter.local --server.storage-engine $ARANGO_STORAGE_ENGINE --starter.data-dir testrun"
+            arangodb --starter.local --server.storage-engine $ARANGO_STORAGE_ENGINE --starter.data-dir /testrun"
 
         echo $command
         $command
     fi
 elif [ "$ARANGO_MODE" == "singleserver" ]; then
     if [ "$ARANGO_AUTH" == "auth" ]; then
+        JWTDIR="`pwd`/jwtsecret.$$"
+        rm -rf $JWTDIR
+        mkdir $JWTDIR
+
+        echo "geheim" > $JWTDIR/geheim
+
         command="docker run \
             --name=$ARANGO_DOCKER_NAME \
             -d \
+            -v $JWTDIR:/jwtsecret \
             -p $ARANGO_PORT:8529 \
             -e ARANGO_ROOT_PASSWORD=$ARANGO_ROOT_PASSWORD \
-            -e ARANGO_STORAGE_ENGINE=$ARANGO_STORAGE_ENGINE \
-            registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH --javascript.allow-admin-execute true"
+            -e ARANGODB_DEFAULT_ROOT_PASSWORD=$ARANGO_ROOT_PASSWORD \
+            -v $OUTDIR:/testrun \
+            registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH \
+            arangodb --starter.local --server.storage-engine $ARANGO_STORAGE_ENGINE --auth.jwt-secret /jwtsecret/geheim --starter.mode single --starter.data-dir /testrun"
 
         echo $command
         $command
@@ -72,8 +88,9 @@ elif [ "$ARANGO_MODE" == "singleserver" ]; then
             -d \
             -p $ARANGO_PORT:8529 \
             -e ARANGO_NO_AUTH=1 \
-            -e ARANGO_STORAGE_ENGINE=$ARANGO_STORAGE_ENGINE \
-            registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH --javascript.allow-admin-execute true"
+            -v $OUTDIR:/testrun \
+            registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH \
+            arangodb --starter.local --server.storage-engine $ARANGO_STORAGE_ENGINE --starter.mode single --starter.data-dir /testrun"
 
         echo $command
         $command
