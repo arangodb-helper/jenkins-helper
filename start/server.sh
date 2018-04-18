@@ -49,12 +49,7 @@ else
     exit 1
 fi
 
-echo $DOCKER_CMD
-echo $DOCKER_AUTH
-echo $DOCKER_IMAGE
-echo $STARTER_CMD
-echo $STARTER_MODE
-echo $STARTER_AUTH
+echo "Starting the container with the following command:"
 command="$DOCKER_CMD $DOCKER_AUTH $DOCKER_IMAGE $STARTER_CMD $STARTER_MODE $STARTER_AUTH"
 echo $command
 $command
