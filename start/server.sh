@@ -21,66 +21,41 @@ docker rm -fv $ARANGO_DOCKER_NAME > /dev/null 2>&1 || true
 docker pull registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH
 docker run registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH arangosh --version
 
+OUTDIR="`pwd`/output"
+rm -rf $OUTDIR
+mkdir $OUTDIR
+DOCKER_AUTH=""
+STARTER_AUTH=""
+DOCKER_CMD="docker run --name $ARANGO_DOCKER_NAME -d -p $ARANGO_PORT:8529 -v $OUTDIR:/testrun"
+DOCKER_IMAGE="registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH"
+STARTER_CMD="arangodb --starter.local --server.storage-engine $ARANGO_STORAGE_ENGINE --starter.data-dir /testrun"
+STARTER_MODE=""
+
+if [ "$ARANGO_AUTH" == "auth" ]; then
+  JWTDIR="`pwd`/jwtsecret.$$"
+  rm -rf $JWTDIR
+  mkdir $JWTDIR
+  echo "geheim" > $JWTDIR/geheim
+  DOCKER_AUTH="-v $JWTDIR:/jwtsecret -e ARANGO_ROOT_PASSWORD=$ARANGO_ROOT_PASSWORD -e ARANGODB_DEFAULT_ROOT_PASSWORD=$ARANGO_ROOT_PASSWORD"
+  STARTER_AUTH="--auth.jwt-secret /jwtsecret/geheim" 
+fi
+
 if [ "$ARANGO_MODE" == "cluster" ]; then
-    if [ "$ARANGO_AUTH" == "auth" ]; then
-        JWTDIR="`pwd`/jwtsecret.$$"
-        rm -rf $JWTDIR
-        mkdir $JWTDIR
-
-        echo "geheim" > $JWTDIR/geheim
-
-        command="docker run \
-            --name=$ARANGO_DOCKER_NAME \
-            -d \
-            -v $JWTDIR:/jwtsecret \
-            -p $ARANGO_PORT:8529 \
-            -e ARANGO_ROOT_PASSWORD=$ARANGO_ROOT_PASSWORD \
-            -e ARANGODB_DEFAULT_ROOT_PASSWORD=$ARANGO_ROOT_PASSWORD \
-            registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH \
-            arangodb --starter.local --server.storage-engine $ARANGO_STORAGE_ENGINE --auth.jwt-secret /jwtsecret/geheim --starter.data-dir testrun"
-
-        echo $command
-        $command
-
-        rm -f $JWTFILE
-    else
-        command="docker run \
-            --name=$ARANGO_DOCKER_NAME \
-            -d \
-            -p $ARANGO_PORT:8529 \
-            registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH \
-            arangodb --starter.local --server.storage-engine $ARANGO_STORAGE_ENGINE --starter.data-dir testrun"
-
-        echo $command
-        $command
-    fi
+  STARTER_MODE="--starter.mode cluster" 
 elif [ "$ARANGO_MODE" == "singleserver" ]; then
-    if [ "$ARANGO_AUTH" == "auth" ]; then
-        command="docker run \
-            --name=$ARANGO_DOCKER_NAME \
-            -d \
-            -p $ARANGO_PORT:8529 \
-            -e ARANGO_ROOT_PASSWORD=$ARANGO_ROOT_PASSWORD \
-            -e ARANGO_STORAGE_ENGINE=$ARANGO_STORAGE_ENGINE \
-            registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH --javascript.allow-admin-execute true"
-
-        echo $command
-        $command
-    else
-        command="docker run \
-            --name=$ARANGO_DOCKER_NAME \
-            -d \
-            -p $ARANGO_PORT:8529 \
-            -e ARANGO_NO_AUTH=1 \
-            -e ARANGO_STORAGE_ENGINE=$ARANGO_STORAGE_ENGINE \
-            registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH --javascript.allow-admin-execute true"
-
-        echo $command
-        $command
-    fi
+  STARTER_MODE="--starter.mode single" 
 else
     echo "unknown mode $ARANGO_MODE"
     exit 1
+fi
+
+echo "Starting the container with the following command:"
+command="$DOCKER_CMD $DOCKER_AUTH $DOCKER_IMAGE $STARTER_CMD $STARTER_MODE $STARTER_AUTH"
+echo $command
+$command
+
+if [ "$ARANGO_AUTH" == "auth" ]; then
+  rm -rf $JWTDIR
 fi
 
 trap "docker rm -fv $ARANGO_DOCKER_NAME" EXIT
