@@ -69,7 +69,17 @@ else
 fi
 
 count=0
-while [ "$count" -lt 120 -a -z "`curl $CURL_USER -s http://127.0.0.1:$ARANGO_PORT/_api/version || true`" ]; do
+while [ "$count" -lt 120 ]; do
+  responseCode=`curl -s -I $CURL_USER http://127.0.0.1:$ARANGO_PORT/_api/version | head -n 1 | cut -d$' ' -f2`
+  if [ -n "${responseCode}" ];
+  then
+    if [ $responseCode -eq 200 ];
+    then
+          echo "We are finally ready and authenticated."
+          break
+    fi
+  fi
+
   count=`expr $count + 1`
   echo "waiting ($count)..."
   sleep 2s
