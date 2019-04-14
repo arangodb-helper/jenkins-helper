@@ -1,5 +1,21 @@
 if [ -z "$ARANGO_AUTH" ]; then ARANGO_AUTH="auth"; fi
 if [ -z "$ARANGO_BRANCH" ]; then ARANGO_BRANCH="devel"; fi
+if [ -z "$ARANGO_DOCKER_REG" ]; then ARANGO_DOCKER_REG="docker.io/arangodb"; fi
+if [ -z "$ARANGO_DOCKER_TAG" ]; then ARANGO_DOCKER_TAG="$ARANGO_BRANCH"; fi
+
+if [ "$USE_PREVIEW_DOCKER" == "true" ]
+then 
+    PREVIEW="-preview"
+fi
+
+case ${ARANGO_EDITION,,} in
+     "enterprise")
+          DOCKER_IMAGE="$ARANGO_DOCKER_REG/enterprise$PREVIEW:$ARANGO_DOCKER_TAG"
+      ;;
+     *)
+          DOCKER_IMAGE="$ARANGO_DOCKER_REG/arangodb$PREVIEW:$ARANGO_DOCKER_TAG"
+      ;;
+esac
 
 for name in ARANGO_DOCKER_NAME ARANGO_PORT ARANGO_MODE ARANGO_STORAGE_ENGINE ARANGO_EDITION ARANGO_AUTH; do
     if [ -z "${!name}" ]; then
@@ -18,8 +34,8 @@ echo
 
 docker kill $ARANGO_DOCKER_NAME > /dev/null 2>&1 || true
 docker rm -fv $ARANGO_DOCKER_NAME > /dev/null 2>&1 || true
-docker pull registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH
-docker run registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH arangosh --version
+docker pull $DOCKER_IMAGE
+docker run $DOCKER_IMAGE arangosh --version
 
 OUTDIR="`pwd`/output"
 rm -rf $OUTDIR
@@ -27,7 +43,7 @@ mkdir $OUTDIR
 DOCKER_AUTH=""
 STARTER_AUTH=""
 DOCKER_CMD="docker run --name $ARANGO_DOCKER_NAME -d -p $ARANGO_PORT:8529 -v $OUTDIR:/testrun"
-DOCKER_IMAGE="registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH"
+#DOCKER_IMAGE="registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH"
 STARTER_CMD="arangodb --starter.local --server.storage-engine $ARANGO_STORAGE_ENGINE --starter.data-dir /testrun"
 STARTER_MODE=""
 
