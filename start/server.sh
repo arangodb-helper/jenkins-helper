@@ -11,11 +11,10 @@ fi
 case ${ARANGO_EDITION,,} in
      "enterprise")
           DOCKER_IMAGE="$ARANGO_DOCKER_REG/enterprise$PREVIEW:$ARANGO_DOCKER_TAG"
-          ;;
-     "community")
+      ;;
      *)
           DOCKER_IMAGE="$ARANGO_DOCKER_REG/arangodb$PREVIEW:$ARANGO_DOCKER_TAG"
-          ;;
+      ;;
 esac
 
 for name in ARANGO_DOCKER_NAME ARANGO_PORT ARANGO_MODE ARANGO_STORAGE_ENGINE ARANGO_EDITION ARANGO_AUTH; do
