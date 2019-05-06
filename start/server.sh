@@ -26,9 +26,10 @@ done
 
 echo "NAME: $ARANGO_DOCKER_NAME"
 
-if [ "$ARANGO_MODE" == "cluster" -a  ! -z $ARANGO_PORTS ]; then
+if [ "$ARANGO_MODE" == "cluster" -a ${#ARANGO_PORTS[@]} > 0 ]; then
   port_shift=29
-  for i in "$ARANGO_PORTS"; do
+  for i in "${ARANGO_PORTS[@]}"; do
+    echo "PORT $i to export"
     EXPORT_PORTS="$EXPORT_PORTS -p $i:$(expr 8500 + $port_shift)"
     port_shift=$(expr $port_shift + 10)
   done
