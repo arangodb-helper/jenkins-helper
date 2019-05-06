@@ -13,5 +13,5 @@ export ARANGO_STORAGE_ENGINE=$engine
 export ARANGO_MODE=$mode
 export ARANGO_EDITION=$edition
 export ARANGO_PORT=$port1
-export ARANGO_PORTS="$port1 $port2 $port3"
+export ARANGO_PORTS=("$port1" "$port2" "$port3")
 export ARANGO_AUTH=$auth

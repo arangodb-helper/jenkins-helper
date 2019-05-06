@@ -24,8 +24,6 @@ for name in ARANGO_DOCKER_NAME ARANGO_PORT ARANGO_MODE ARANGO_STORAGE_ENGINE ARA
     fi
 done
 
-
-
 echo "NAME: $ARANGO_DOCKER_NAME"
 
 if [ "$ARANGO_MODE" == "cluster" -a  ! -z $ARANGO_PORTS ]; then
