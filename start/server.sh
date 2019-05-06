@@ -24,8 +24,20 @@ for name in ARANGO_DOCKER_NAME ARANGO_PORT ARANGO_MODE ARANGO_STORAGE_ENGINE ARA
     fi
 done
 
+
+
 echo "NAME: $ARANGO_DOCKER_NAME"
-echo "PORT: $ARANGO_PORT"
+
+if [ "$ARANGO_MODE" == "cluster" -a  ! -z $ARANGO_PORTS ]; then
+  port_shift=29
+  for i in "$ARANGO_PORTS"; do
+    EXPORT_PORTS="$EXPORT_PORTS -p $i:$(expr 8500 + $port_shift)"
+    port_shift=$(expr $port_shift + 10)
+  done
+else
+  EXPORT_PORTS="-p $ARANGO_PORT:8529"
+fi
+echo "PORTS: $EXPORT_PORTS"
 echo "MODE: $ARANGO_MODE"
 echo "ENGINE: $ARANGO_STORAGE_ENGINE"
 echo "AUTH: $ARANGO_AUTH"
@@ -42,7 +54,7 @@ rm -rf $OUTDIR
 mkdir $OUTDIR
 DOCKER_AUTH=""
 STARTER_AUTH=""
-DOCKER_CMD="docker run --name $ARANGO_DOCKER_NAME -d -p $ARANGO_PORT:8529 -v $OUTDIR:/testrun"
+DOCKER_CMD="docker run --name $ARANGO_DOCKER_NAME -d $EXPORT_PORTS -v $OUTDIR:/testrun"
 #DOCKER_IMAGE="registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH"
 STARTER_CMD="arangodb --starter.local --server.storage-engine $ARANGO_STORAGE_ENGINE --starter.data-dir /testrun"
 STARTER_MODE=""
@@ -57,7 +69,7 @@ if [ "$ARANGO_AUTH" == "auth" ]; then
 fi
 
 if [ "$ARANGO_MODE" == "cluster" ]; then
-  STARTER_MODE="--starter.mode cluster" 
+  STARTER_MODE="--starter.mode cluster"
 elif [ "$ARANGO_MODE" == "singleserver" ]; then
   STARTER_MODE="--starter.mode single" 
 else
