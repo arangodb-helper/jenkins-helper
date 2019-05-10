@@ -10,7 +10,7 @@ clean_ports () {
   [ ! -z "$port3" ] && ./jenkins/start/port.sh --clean $port3
 }
 
-trap clean_ports EXIT
+trap "$(trap -p | grep EXIT | sed "s/.*-- '\(.*\)'.EXIT/\1;/g")clean_ports" EXIT
 
 export ARANGO_STORAGE_ENGINE=$engine
 export ARANGO_MODE=$mode
