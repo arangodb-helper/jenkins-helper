@@ -1,5 +1,5 @@
 port=`./jenkins/start/port.sh`
-trap "./jenkins/start/port.sh --clean $port" EXIT
+trap "$(trap -p | grep EXIT | sed "s/.*-- '\(.*\)'.EXIT/\1;/g")./jenkins/start/port.sh --clean $port" EXIT
 
 echo "using port $port"
 
