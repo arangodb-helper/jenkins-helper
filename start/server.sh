@@ -53,7 +53,7 @@ rm -rf $OUTDIR
 mkdir $OUTDIR
 DOCKER_AUTH=""
 STARTER_AUTH=""
-DOCKER_CMD="docker run --name $ARANGO_DOCKER_NAME -d $EXPORT_PORTS -v $OUTDIR:/testrun"
+DOCKER_CMD="docker run --privileged --name $ARANGO_DOCKER_NAME -d $EXPORT_PORTS -v $OUTDIR:/testrun"
 #DOCKER_IMAGE="registry.arangodb.biz:5000/arangodb/linux-${ARANGO_EDITION}-maintainer:$ARANGO_BRANCH"
 STARTER_CMD="arangodb --starter.local --server.storage-engine $ARANGO_STORAGE_ENGINE --starter.data-dir /testrun"
 STARTER_MODE=""
